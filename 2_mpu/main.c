@@ -37,7 +37,7 @@ int main(void)
 
 void user_task(void)
 {
-	printf("[User] Try to print something.\r\n\n");
+	//printf("[User] Try to print something.\r\n\n");
 	blink(LED_BLUE); //should not return
 }
 
@@ -55,12 +55,12 @@ void set_mpu(void)
 	MPU_RASR_VALUE(MPU_XN_ENABLE, MPU_AP_FULL_ACCESS, MPU_TYPE_SRAM, 0, MPU_REGION_SIZE_128KB);//MPU_XN_DISABLE is "allow"
 
 	//set region 2: RCC_AHB1ENR, 32B, forbid execution, full access, enable all subregion
-	REG(MPU_BASE + MPU_RBAR_OFFSET) = MPU_RBAR_VALUE(RCC_AHB1ENR_OFFSET,2);//Define the starting address of each region
+	REG(MPU_BASE + MPU_RBAR_OFFSET) = MPU_RBAR_VALUE(RCC_BASE +RCC_AHB1ENR_OFFSET,2);//Define the starting address of each region
 	REG(MPU_BASE + MPU_RASR_OFFSET) = 
 	MPU_RASR_VALUE(MPU_XN_ENABLE, MPU_AP_FULL_ACCESS, MPU_TYPE_PERIPHERALS, 0, MPU_REGION_SIZE_32B);//MPU_XN_DISABLE is "allow"
 
 	//set region 3: GPIOD, 32B, forbid execution, full access, enable all subregion
-	REG(MPU_BASE + MPU_RBAR_OFFSET) = MPU_RBAR_VALUE(RCC_AHB1ENR_OFFSET,3);//Define the starting address of each region
+	REG(MPU_BASE + MPU_RBAR_OFFSET) = MPU_RBAR_VALUE(GPIO_BASE(GPIO_PORTD),3);//Define the starting address of each region
 	REG(MPU_BASE + MPU_RASR_OFFSET) = 
 	MPU_RASR_VALUE(MPU_XN_ENABLE, MPU_AP_FULL_ACCESS, MPU_TYPE_PERIPHERALS, 0, MPU_REGION_SIZE_32B);//MPU_XN_DISABLE is "allow"
 
@@ -68,9 +68,8 @@ void set_mpu(void)
 	//disable region 4 ~ 7
 	for (int i=4;i<8;i++)
 	{
-	REG(MPU_BASE + MPU_RBAR_OFFSET) = MPU_RBAR_VALUE(RCC_AHB1ENR_OFFSET,i);//Define the starting address of each region
-	REG(MPU_BASE + MPU_RASR_OFFSET) = 
-	MPU_RASR_VALUE(MPU_XN_ENABLE, MPU_AP_NO_ACCESS , MPU_TYPE_PERIPHERALS, 0, MPU_REGION_SIZE_32B);//MPU_XN_DISABLE is "allow"
+	REG(MPU_BASE + MPU_RBAR_OFFSET) = MPU_RBAR_VALUE(0,i);//Define the starting address of each region
+	REG(MPU_BASE + MPU_RASR_OFFSET) = 0;//MPU_XN_DISABLE is "allow"
 
 	}
 
@@ -78,5 +77,5 @@ void set_mpu(void)
 	SET_BIT(MPU_BASE+MPU_CTRL_OFFSET,MPU_PRIVDEFENA_BIT);
 
 	//enable mpu
-	REG(MPU_BASE + MPU_RASR_OFFSET) = 1;
+	SET_BIT(MPU_BASE + MPU_CTRL_OFFSET, MPU_ENABLE_BIT);
 }

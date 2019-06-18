@@ -3,27 +3,24 @@
 .global	read_sp
 read_sp:
 	mov r0 ,sp
-	isb
 	bx lr  
 
 .global	read_msp
 read_msp:
-	mov r0, msp
+	mrs r0,msp 
 	isb
 	bx lr
+
 .global	read_psp
 read_psp:
-	mov r0, psp
-    bx lr
+	mrs r0,psp
+	isb
+	bx lr
+
 .global	read_ctrl
 read_ctrl:
-	mrs r0, ctrl
-    bx lr
-.global	start_user
-start_user:
-	mov lr, r0
-	mov psp, r1
-	mov r0, 
+	mrs r0,control 
+	isb
 	bx lr
 
 
